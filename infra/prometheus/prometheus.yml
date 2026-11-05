@@ -7,24 +7,29 @@ scrape_configs:
     dns_sd_configs:
       - names: [gateway]
         type: A
+        refresh_interval: 5s
         port: 3000
   - job_name: catalog
     dns_sd_configs:
       - names: [catalog]
         type: A
+        refresh_interval: 5s
         port: 3001
   - job_name: reservations
     dns_sd_configs:
       - names: [reservations]
         type: A
+        refresh_interval: 5s
         port: 3002
   - job_name: payment
     dns_sd_configs:
       - names: [payment]
         type: A
+        refresh_interval: 5s
         port: 3003
   - job_name: notifications
     dns_sd_configs:
       - names: [notifications]
         type: A
+        refresh_interval: 5s
         port: 3004

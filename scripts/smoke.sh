@@ -15,7 +15,8 @@ curl -fsS http://127.0.0.1:3000/health | grep -q '"service":"gateway"'
 echo "ok: gateway published on localhost"
 
 for _ in $(seq 1 30); do
-  up=$(curl -fsS http://127.0.0.1:9090/api/v1/targets | grep -o '"health":"up"' | wc -l)
+  # Zero matches is expected while Prometheus discovers the services, so it must not abort the script.
+  up=$({ curl -fsS http://127.0.0.1:9090/api/v1/targets || true; } | { grep -o '"health":"up"' || true; } | wc -l)
   [ "$up" -ge "${#services[@]}" ] && { echo "ok: Prometheus scraping $up targets"; exit 0; }
   sleep 2
 done
