@@ -1,0 +1,40 @@
+{
+  "$comment": "Team registry. Commit authors must match one of these emails. Used by scripts/mob.mjs, git hooks and CI.",
+  "members": [
+    {
+      "id": "antonio",
+      "name": "Antonio Augusto Dantas Neto",
+      "email": "antonioadn18@gmail.com",
+      "github": "AntonioaDn",
+      "area": "auth-gateway"
+    },
+    {
+      "id": "deivily",
+      "name": "Deivily Breno Silva Carneiro",
+      "email": "deivily_breno100@outlook.com",
+      "github": "dbreno",
+      "area": "payments"
+    },
+    {
+      "id": "everton",
+      "name": "Everton Emanuel Llarena da Silva",
+      "email": "evertonemanuel191@gmail.com",
+      "github": "EvertonLlarena",
+      "area": "notifications"
+    },
+    {
+      "id": "kaique",
+      "name": "Kaique Bezerra Santos",
+      "email": "kakzerra2004@gmail.com",
+      "github": "KaiqueSantos2004",
+      "area": "catalog"
+    },
+    {
+      "id": "lucas",
+      "name": "Lucas Gabriel Fontes da Silva",
+      "email": "lucasgabrielfontesdasilva@gmail.com",
+      "github": "LucasGabrielFontes",
+      "area": "reservations"
+    }
+  ]
+}

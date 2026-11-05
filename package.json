@@ -1,0 +1,14 @@
+{
+  "name": "cineseat",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Distributed cinema seat reservation and ticketing system",
+  "license": "MIT",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "mob": "node scripts/mob.mjs"
+  }
+}
