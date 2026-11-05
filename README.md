@@ -79,6 +79,3 @@ TypeScript/Node.js, PostgreSQL (um banco por serviço), Redis (cache e bloqueio 
 | Projeto 02: documentação inicial | 06/11/2026 | Pendente |
 | Projeto 03: documentação final | 11/12/2026 | Pendente |
 
-## Ferramentas de IA utilizadas
-
-> Seção obrigatória. 
