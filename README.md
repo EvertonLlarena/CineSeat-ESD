@@ -96,30 +96,44 @@ npm test
 
 ## Ferramentas de IA utilizadas
 
-> **Rascunho: a equipe deve revisar e completar esta seção antes da entrega.** A omissão desta seção desclassifica a entrega.
+**Ferramentas:** Claude Code (modelo Claude Opus 5.5), usado no VS Code durante o Projeto 02. 
 
-**Ferramentas:** Claude Code (modelo Claude Opus 5.5). *[A equipe deve acrescentar qualquer outra ferramenta usada, inclusive no Projeto 01.]*
+**Onde atuou:**
 
-**Onde foi usada:**
+| Parte | O que o Claude Code fez |
+|---|---|
+| Análise | Revisou a proposta do Projeto 01 em relação à especificação, quanto a qualidade, viabilidade e complexidade |
+| Documentação | Redigiu os diagramas C4, os ADRs, a stack, os padrões e o plano de testes |
+| Código | Gerou o monorepo, os esqueletos dos 5 serviços, o Dockerfile, o Docker Compose, a configuração de monitoramento e o pipeline de CI |
+| Testes | Escreveu os testes automatizados e o `smoke.sh`, executou o ambiente e corrigiu as falhas apontadas pelo CI |
+| Git | Executou os commits e os pushes, depois da autorização da equipe |
 
-- **Análise:** revisão da proposta do Projeto 01 em relação à especificação.
-- **Documentação:** rascunho dos diagramas C4, ADRs, stack, padrões, plano de testes, divisão de responsabilidades e roteiro.
-- **Código:** esqueleto do monorepo, serviços, Dockerfile, Docker Compose e pipeline de CI.
+**Como foi orientada:** a IA recebeu a especificação do professor, a proposta da equipe e o repositório. A equipe pediu primeiro uma revisão crítica da proposta, e a IA só alterou arquivos depois que o plano foi aprovado. 
 
-**Como foi orientada:** a IA recebeu a especificação do professor, a proposta da equipe e o repositório. A equipe pediu uma revisão crítica, aprovou um plano e definiu as regras de divisão e de commits.
+**Fluxo de trabalho:** A IA sugeriu a divisão por frentes, e a equipe a confirmou. O autor de cada commit é o integrante responsável pela tarefa. Os 15 commits iniciais foram autorizados em lote, com a informação de que cada integrante havia revisado a sua parte. 
 
-**Fluxo de trabalho:** a equipe trabalhou em uma única máquina e em uma única sessão do Claude Code. O autor de cada commit é o integrante responsável pela tarefa e que revisou o conteúdo, mas o conteúdo inicial foi gerado com a IA, conforme descrito acima. Por decisão da equipe, os commits não têm a IA como coautora, e esta seção é o registro dessa participação.
+**Avaliação honesta:**
 
-**Avaliação honesta:** *[A equipe deve preencher com o que funcionou, o que precisou ser corrigido e o que foi descartado.]* Pontos já conhecidos:
-
-- **Funcionou:** a revisão apontou lacunas na proposta, como o uso do Redis como garantia e os casos de timeout no pagamento.
-- **Limitação:** a máquina usada não tinha Docker, então a IA não executou o ambiente Compose localmente; essa validação fica a cargo do CI.
+- **O que funcionou:**
+  - A revisão apontou lacunas que viraram decisões documentadas: o Redis não garantia a venda única, o estado do assento não tinha dono, um timeout no pagamento não prova que a cobrança falhou, faltava frontend e alguns padrões não tinham teste. As mudanças estão em [docs/patterns.md](docs/patterns.md).
+  - Depois das correções abaixo, lint, testes, Docker Compose, Semgrep e Trivy passaram no CI.
+- **O que precisou ser corrigido:** a primeira versão foi verificada sem Docker, e dois defeitos só apareceram na primeira execução real do ambiente. Ambos foram corrigidos pela IA, depois de autorizados:
+  - O `smoke.sh` abortava enquanto o Prometheus ainda não tinha descoberto os serviços.
+  - O Trivy reprovou a imagem por 10 vulnerabilidades altas, vindas de gerenciadores de pacotes que os serviços não usam. A solução foi removê-los da imagem final, sem silenciar alertas.
+- **O que foi descartado:**
+  - Nenhum artefato gerado foi rejeitado por inteiro: a equipe aprovou o plano e seguiu as recomendações da IA.
+  - Do que estava previsto na proposta, saiu o bloqueio de assentos no Redis.
+  - Entre as alternativas analisadas, ficaram de fora CDC com Debezium, Kubernetes, Service Mesh, Kafka, Event Sourcing e WebSocket.
+  - Canary e Blue-Green foram sugeridos como opcionais e não foram adotados nesta etapa.
+- **Limitações:**
+  - Os serviços ainda são esqueletos, então as decisões de arquitetura e os critérios de sucesso, também propostos ou revisados com a IA, só serão validados no Projeto 03.
+  - Os commits intermediários não foram testados um a um, apenas o resultado final.
 
 ## Cronograma
 
 | Entrega | Data | Situação |
 |---|---|---|
 | Projeto 01: grupo e tema | 09/10/2026 | Entregue |
-| Projeto 02: documentação inicial | 06/11/2026 | Em andamento |
+| Projeto 02: documentação inicial | 06/11/2026 | Entregue |
 | Projeto 03: documentação final | 11/12/2026 | Pendente |
 
