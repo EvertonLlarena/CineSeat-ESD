@@ -12,6 +12,8 @@ FROM node:22-alpine
 ARG SERVICE
 ENV NODE_ENV=production SERVICE=${SERVICE}
 WORKDIR /app
+# Services only need the Node runtime. Package managers would add attack surface.
+RUN rm -rf /usr/local/lib/node_modules /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /opt/yarn-*
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages ./packages
 COPY --from=build /app/services ./services
