@@ -1,0 +1,129 @@
+# Only the gateway and the operations tools are published, and only on localhost.
+# Services stay internal so they can be scaled: docker compose up --scale reservations=3
+name: cineseat
+
+x-service: &service
+  restart: unless-stopped
+  depends_on:
+    postgres: { condition: service_healthy }
+    redis: { condition: service_healthy }
+    rabbitmq: { condition: service_healthy }
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cineseat}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cineseat}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d reservations']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:8-alpine
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-cineseat}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-cineseat}
+    ports:
+      - 127.0.0.1:15672:15672
+    healthcheck:
+      test: [CMD, rabbitmq-diagnostics, -q, ping]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+
+  gateway:
+    <<: *service
+    build:
+      context: .
+      args:
+        SERVICE: gateway
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://${POSTGRES_USER:-cineseat}:${POSTGRES_PASSWORD:-cineseat}@postgres:5432/gateway
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-cineseat}:${RABBITMQ_PASSWORD:-cineseat}@rabbitmq:5672
+    ports:
+      - 127.0.0.1:3000:3000
+
+  catalog:
+    <<: *service
+    build:
+      context: .
+      args:
+        SERVICE: catalog
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgres://${POSTGRES_USER:-cineseat}:${POSTGRES_PASSWORD:-cineseat}@postgres:5432/catalog
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-cineseat}:${RABBITMQ_PASSWORD:-cineseat}@rabbitmq:5672
+
+  reservations:
+    <<: *service
+    build:
+      context: .
+      args:
+        SERVICE: reservations
+    environment:
+      PORT: 3002
+      DATABASE_URL: postgres://${POSTGRES_USER:-cineseat}:${POSTGRES_PASSWORD:-cineseat}@postgres:5432/reservations
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-cineseat}:${RABBITMQ_PASSWORD:-cineseat}@rabbitmq:5672
+
+  payment:
+    <<: *service
+    build:
+      context: .
+      args:
+        SERVICE: payment
+    environment:
+      PORT: 3003
+      DATABASE_URL: postgres://${POSTGRES_USER:-cineseat}:${POSTGRES_PASSWORD:-cineseat}@postgres:5432/payment
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-cineseat}:${RABBITMQ_PASSWORD:-cineseat}@rabbitmq:5672
+
+  notifications:
+    <<: *service
+    build:
+      context: .
+      args:
+        SERVICE: notifications
+    environment:
+      PORT: 3004
+      DATABASE_URL: postgres://${POSTGRES_USER:-cineseat}:${POSTGRES_PASSWORD:-cineseat}@postgres:5432/notifications
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-cineseat}:${RABBITMQ_PASSWORD:-cineseat}@rabbitmq:5672
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - 127.0.0.1:9090:9090
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-cineseat}
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - 127.0.0.1:3030:3000
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres-data:

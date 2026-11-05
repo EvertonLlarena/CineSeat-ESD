@@ -1,0 +1,30 @@
+global:
+  scrape_interval: 5s
+
+# DNS discovery finds every replica when a service is scaled.
+scrape_configs:
+  - job_name: gateway
+    dns_sd_configs:
+      - names: [gateway]
+        type: A
+        port: 3000
+  - job_name: catalog
+    dns_sd_configs:
+      - names: [catalog]
+        type: A
+        port: 3001
+  - job_name: reservations
+    dns_sd_configs:
+      - names: [reservations]
+        type: A
+        port: 3002
+  - job_name: payment
+    dns_sd_configs:
+      - names: [payment]
+        type: A
+        port: 3003
+  - job_name: notifications
+    dns_sd_configs:
+      - names: [notifications]
+        type: A
+        port: 3004
